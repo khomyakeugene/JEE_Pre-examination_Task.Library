@@ -1,9 +1,6 @@
 package com.company.calculator.library;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by Yevhen on 22.04.2016.
@@ -16,18 +13,33 @@ public class SimpleCalculator implements Calculator {
     private static final String ADDITION_OPERATION_CODE = "+";
     private static final String SUBTRACT_OPERATION_CODE = "-";
 
-    private HashMap<String, List<Operation>> operationMap = new HashMap<>();
     private Parser parser = new SimpleParser();
+
+    List<Operation> operationList;
 
     public SimpleCalculator() {
         initDefaultOperationList();
     }
 
+    @Override
+    public void setOperationList(List<Operation> operationList) {
+        if (this.operationList == null) {
+            this.operationList = operationList;
+        } else {
+            this.operationList.addAll(operationList);
+        }
+    }
+
     private void initDefaultOperationList() {
         // Addition operation for numbers
-        addOperation(ADDITION_OPERATION_CODE, new NumberAdditionOperation());
+        NumberAdditionOperation numberAdditionOperation = new NumberAdditionOperation();
+        numberAdditionOperation.setOperationCode(ADDITION_OPERATION_CODE);
+        addOperation(numberAdditionOperation);
+
         // Subtract operation for numbers
-        addOperation(SUBTRACT_OPERATION_CODE, new NumberSubtractOperation());
+        NumberSubtractOperation numberSubtractOperation = new NumberSubtractOperation();
+        numberSubtractOperation.setOperationCode(SUBTRACT_OPERATION_CODE);
+        addOperation(numberSubtractOperation);
     }
 
     @Override
@@ -36,11 +48,12 @@ public class SimpleCalculator implements Calculator {
 
         // Parse input expression: receive operation description in <parseResult> or IllegalArgumentException
         // if <inputExpression> is invalid
-        ParseResult parseResult = parser.parse(operationMap.keySet(), inputExpression);
+        ParseResult parseResult = parser.parse(operationCodeSet(), inputExpression);
         // Search suitable operation, always suppose that if such operation could be found more than one,
         // only the first one should be executed
-        Optional<Operation> first = operationMap.get(parseResult.operationCode()).
-                stream().filter(o -> o.isThisOperation(inputExpression, parseResult)).findFirst();
+        Optional<Operation> first = operationList.stream().
+                filter(o -> (o.getOperationCode().equals(parseResult.operationCode()) &&
+                                o.isThisOperation(inputExpression, parseResult))).findFirst();
         if (first.isPresent()) {
             Operation operation = first.get();
             // Store operands
@@ -56,19 +69,15 @@ public class SimpleCalculator implements Calculator {
     }
 
     @Override
-    public void addOperation(String operationCode, Operation operation) {
-        // Search operation by <operationCode>
-        List<Operation> operationList = operationMap.get(operationCode);
+    public void addOperation(Operation operation) {
         // If yet not presented than create
         if (operationList == null) {
             operationList = new ArrayList<>();
         }
-
         // Add operation
         operationList.add(operation);
-        // Store new operation list
-        operationMap.put(operationCode, operationList);
     }
+
 
     @Override
     public void setParser(Parser parser) {
@@ -76,7 +85,10 @@ public class SimpleCalculator implements Calculator {
     }
 
     @Override
-    public String[] operationCodeList() {
-        return operationMap.keySet().toArray(new String[operationMap.keySet().size()]);
+    public Set<String> operationCodeSet() {
+        HashSet<String> operationCodeSet = new HashSet<>();
+        operationList.stream().forEach(o -> operationCodeSet.add(o.getOperationCode()));
+
+        return operationCodeSet;
     }
 }

@@ -1,5 +1,8 @@
 package com.company.calculator.library;
 
+import java.util.List;
+import java.util.Set;
+
 /**
  * Created by Yevhen on 20.04.2016.
  */
@@ -14,12 +17,11 @@ public interface Calculator {
 
     /**
      *
-     * @param operationCode - symbol sequence ("+", "-", "sqrt" etc.) which represents the operationCode
      * @param operation -
      *
      * Add <b>operationCode</b> associated with its <b>operationCode</b> to the list of the operations which can be executed
      */
-    void addOperation(String operationCode, Operation operation);
+    void addOperation(Operation operation);
 
     /**
      *
@@ -27,9 +29,7 @@ public interface Calculator {
      */
     void setParser(Parser parser);
 
-    /**
-     *
-     * @return - list of codes of available operations
-     */
-    String[] operationCodeList();
+    void setOperationList(List<Operation> operationList);
+
+    Set<String> operationCodeSet();
 }

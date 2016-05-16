@@ -19,6 +19,11 @@ public abstract class EmptyOperation implements Operation {
     public abstract String execute();
 
     @Override
+    public String getOperationCode() {
+        return operationCode;
+    }
+
+    @Override
     public void setOperationCode(String operationCode) {
         this.operationCode = operationCode;
     }

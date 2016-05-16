@@ -8,6 +8,8 @@ import java.util.List;
 public interface Operation {
     void setOperationCode(String operationCode);
 
+    String getOperationCode();
+
     void setRank(int rank);
 
     boolean isThisOperation(String inputExpression, ParseResult parseResult);
