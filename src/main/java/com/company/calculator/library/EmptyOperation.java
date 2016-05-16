@@ -7,6 +7,8 @@ import java.util.List;
  * Created by Yevhen on 22.04.2016.
  */
 public abstract class EmptyOperation implements Operation {
+    private String operationCode;
+    private int rank;
     private int expectedOperandCount = -1;
     private ArrayList<String> operandList = new ArrayList<>();
 
@@ -15,6 +17,16 @@ public abstract class EmptyOperation implements Operation {
 
     @Override
     public abstract String execute();
+
+    @Override
+    public void setOperationCode(String operationCode) {
+        this.operationCode = operationCode;
+    }
+
+    @Override
+    public void setRank(int rank) {
+        this.rank = rank;
+    }
 
     @Override
     public void setOperands(List<String> operands) {
