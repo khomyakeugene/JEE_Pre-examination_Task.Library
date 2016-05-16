@@ -14,8 +14,7 @@ public class SimpleCalculator implements Calculator {
     private static final String SUBTRACT_OPERATION_CODE = "-";
 
     private Parser parser = new SimpleParser();
-
-    List<Operation> operationList;
+    private List<Operation> operationList = new ArrayList<>();
 
     public SimpleCalculator() {
         initDefaultOperationList();
@@ -23,11 +22,8 @@ public class SimpleCalculator implements Calculator {
 
     @Override
     public void setOperationList(List<Operation> operationList) {
-        if (this.operationList == null) {
-            this.operationList = operationList;
-        } else {
-            this.operationList.addAll(operationList);
-        }
+        // Always extend operation list
+        this.operationList.addAll(operationList);
     }
 
     private void initDefaultOperationList() {
@@ -70,10 +66,6 @@ public class SimpleCalculator implements Calculator {
 
     @Override
     public void addOperation(Operation operation) {
-        // If yet not presented than create
-        if (operationList == null) {
-            operationList = new ArrayList<>();
-        }
         // Add operation
         operationList.add(operation);
     }
