@@ -183,15 +183,16 @@ public class SimpleCalculator implements Calculator {
                 operationStack.push(token);
             } else if (token.equals(RIGHT_PARENTHESIS)) {
                 // Right parenthesis
-                while (!operationStack.peekFirst().equals(LEFT_PARENTHESIS)) {
+                while (!operationStack.isEmpty() && !operationStack.peekFirst().equals(LEFT_PARENTHESIS)) {
                     calculateElementaryOperation(operandStack, operationStack);
                 }
-                // Pop the relevant left parenthesis from operation stack and discard it
-                String expectedLeftParenthesis = operationStack.pop();
-                // Check of the left and right parenthesises balance
-                if (!expectedLeftParenthesis.equals(LEFT_PARENTHESIS)) {
+                // Check the left and right parenthesises balance
+                if (operationStack.isEmpty()) {
                     throw new IllegalArgumentException(String.format(
                             IT_LOOKS_LIKE_THERE_IS_IMBALANCE_OF_LEFT_AND_RIGHT_PARENTHESISES_PATTERN, expression));
+                } else {
+                    // Pop the relevant left parenthesis from operation stack and discard it
+                    operationStack.pop();
                 }
             } else if (operationCodeSet.contains(token)) {
                 // Operation

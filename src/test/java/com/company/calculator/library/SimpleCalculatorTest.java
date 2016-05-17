@@ -45,6 +45,6 @@ public class SimpleCalculatorTest extends ExpressionTest {
 
     @Test
     public void executeParsingTest() throws Exception {
-        simpleCalculator.execute("2 + 9 * (12+45/5)");
+        simpleCalculator.execute("2 + 9 * 12+45/5)");
     }
 }
