@@ -9,4 +9,9 @@ public abstract class BinaryNumberOperation extends NumberOperation implements O
     public BinaryNumberOperation() {
         setExpectedOperandCount(OPERANDS_COUNT);
     }
+
+    @Override
+    public OperatorType operatorType() {
+        return OperatorType.BINARY;
+    }
 }

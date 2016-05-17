@@ -16,6 +16,8 @@ public interface Operation {
 
     boolean isThisOperation(String inputExpression, ParseResult parseResult);
 
+    OperatorType operatorType();
+
     void setOperands(List<String> operands);
 
     String execute();

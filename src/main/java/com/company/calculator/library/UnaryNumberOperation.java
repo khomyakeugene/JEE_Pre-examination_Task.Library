@@ -10,4 +10,9 @@ public abstract class UnaryNumberOperation extends NumberOperation implements Op
     public UnaryNumberOperation() {
         setExpectedOperandCount(OPERANDS_COUNT);
     }
+
+    @Override
+    public OperatorType operatorType() {
+        return OperatorType.PREFIX_UNARY;
+    }
 }
