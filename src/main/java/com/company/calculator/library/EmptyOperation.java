@@ -29,6 +29,11 @@ public abstract class EmptyOperation implements Operation {
     }
 
     @Override
+    public int getRank() {
+        return rank;
+    }
+
+    @Override
     public void setRank(int rank) {
         this.rank = rank;
     }

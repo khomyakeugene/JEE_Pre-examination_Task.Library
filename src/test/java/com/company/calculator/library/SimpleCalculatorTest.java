@@ -41,4 +41,10 @@ public class SimpleCalculatorTest extends ExpressionTest {
     public void executeInvalidExpressionTest() throws Exception {
         executeTest(invalidBinaryOperationExpression);
     }
+
+
+    @Test(timeout = 1000)
+    public void executeParsingTest() throws Exception {
+        simpleCalculator.execute("2 +9 * (log10 12+45)");
+    }
 }

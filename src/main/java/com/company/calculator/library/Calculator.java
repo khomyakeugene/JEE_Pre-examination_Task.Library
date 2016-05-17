@@ -9,11 +9,11 @@ import java.util.Set;
 public interface Calculator {
     /**
      *
-     * @param inputExpression is the string which represents some simple algebraic expression, for example, "1+2" or "*,5,6"
+     * @param expression is the string which represents some simple algebraic expression, for example, "1+2" or "*,5,6"
      * @return result of calculation of the <b>inputExpression</b>-expression
      * @throws IllegalArgumentException if it is impossible to calculate the expression
      */
-    String execute(String inputExpression);
+    String execute(String expression);
 
     /**
      *

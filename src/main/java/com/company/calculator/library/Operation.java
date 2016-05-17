@@ -12,6 +12,8 @@ public interface Operation {
 
     void setRank(int rank);
 
+    int getRank();
+
     boolean isThisOperation(String inputExpression, ParseResult parseResult);
 
     void setOperands(List<String> operands);
