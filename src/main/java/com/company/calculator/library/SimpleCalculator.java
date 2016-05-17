@@ -38,8 +38,7 @@ public class SimpleCalculator implements Calculator {
         addOperation(numberSubtractOperation);
     }
 
-    @Override
-    public String execute(String inputExpression) {
+    private String executeElementaryExpression(String inputExpression) {
         String result;
 
         // Parse input expression: receive operation description in <parseResult> or IllegalArgumentException
@@ -49,7 +48,7 @@ public class SimpleCalculator implements Calculator {
         // only the first one should be executed
         Optional<Operation> first = operationList.stream().
                 filter(o -> (o.getOperationCode().equals(parseResult.operationCode()) &&
-                                o.isThisOperation(inputExpression, parseResult))).findFirst();
+                        o.isThisOperation(inputExpression, parseResult))).findFirst();
         if (first.isPresent()) {
             Operation operation = first.get();
             // Store operands
@@ -62,6 +61,11 @@ public class SimpleCalculator implements Calculator {
         }
 
         return result;
+    }
+
+    @Override
+    public String execute(String inputExpression) {
+        return executeElementaryExpression(inputExpression);
     }
 
     @Override
