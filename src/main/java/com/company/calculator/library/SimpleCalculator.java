@@ -13,6 +13,8 @@ public class SimpleCalculator implements Calculator {
             "It looks like there is imbalance of the left and right parenthesises in the expression\n   \"%s\"";
     private static final String IMPOSSIBLE_TO_DETECT_OPERATION_BY_CODE_PATTERN =
             "It is impossible to detect operation by code \"%s\" in the expression\n   \"%s\"";
+    private static final String IMPOSSIBLE_TO_CALCULATE_EXPRESSION_PATTERN =
+            "It is impossible to calculate expression\n   \"%s\"";
 
     private static final String LEFT_PARENTHESIS = "(";
     private static final String RIGHT_PARENTHESIS = ")";
@@ -154,8 +156,19 @@ public class SimpleCalculator implements Calculator {
         return getOperationByOperationCode(operationCode, false, null);
     }
 
-    private void calculateElementaryOperation(ArrayDeque<String> operandStack, ArrayDeque<String> operationStack) {
+    private void leftRightParenthesisesImbalanceError(String expression) {
+        throw new IllegalArgumentException(String.format(
+                IT_LOOKS_LIKE_THERE_IS_IMBALANCE_OF_LEFT_AND_RIGHT_PARENTHESISES_PATTERN, expression));
+    }
+
+    private void calculateElementaryOperation(ArrayDeque<String> operandStack, ArrayDeque<String> operationStack,
+                                              String expression) {
         String operation = operationStack.pop();
+        // <operation> could be parenthesis only if there is an imbalance of left and right parenthesises
+        if (operation.equals(LEFT_PARENTHESIS) || operation.equals(RIGHT_PARENTHESIS)) {
+            leftRightParenthesisesImbalanceError(expression);
+        }
+        // Operands
         String operand2 = operandStack.pop();
         String operand1 = operandStack.pop();
         // Construct expression
@@ -184,12 +197,11 @@ public class SimpleCalculator implements Calculator {
             } else if (token.equals(RIGHT_PARENTHESIS)) {
                 // Right parenthesis
                 while (!operationStack.isEmpty() && !operationStack.peekFirst().equals(LEFT_PARENTHESIS)) {
-                    calculateElementaryOperation(operandStack, operationStack);
+                    calculateElementaryOperation(operandStack, operationStack, expression);
                 }
                 // Check the left and right parenthesises balance
                 if (operationStack.isEmpty()) {
-                    throw new IllegalArgumentException(String.format(
-                            IT_LOOKS_LIKE_THERE_IS_IMBALANCE_OF_LEFT_AND_RIGHT_PARENTHESISES_PATTERN, expression));
+                    leftRightParenthesisesImbalanceError(expression);
                 } else {
                     // Pop the relevant left parenthesis from operation stack and discard it
                     operationStack.pop();
@@ -203,7 +215,7 @@ public class SimpleCalculator implements Calculator {
                     // Parenthesises can also be presented in the <operationStack> ...
                     if (peekOperation != null) {
                         if (peekOperation.getRank() >= operationRank) {
-                            calculateElementaryOperation(operandStack, operationStack);
+                            calculateElementaryOperation(operandStack, operationStack, expression);
                         } else {
                             break;
                         }
@@ -221,10 +233,16 @@ public class SimpleCalculator implements Calculator {
 
         // While the operation stack is not empty ...
         while (!operationStack.isEmpty()) {
-            calculateElementaryOperation(operandStack, operationStack);
+            calculateElementaryOperation(operandStack, operationStack, expression);
         }
 
         // Pop from operand stack the result of the whole expression
-        return operandStack.pop();
+        String result = operandStack.pop();
+        // <operandStack> could be not empty if some "tokens" has not been recognised as operands or operations
+        if (!operandStack.isEmpty()) {
+            throw new IllegalArgumentException(String.format(IMPOSSIBLE_TO_CALCULATE_EXPRESSION_PATTERN, expression));
+        }
+
+        return result;
     }
 }
