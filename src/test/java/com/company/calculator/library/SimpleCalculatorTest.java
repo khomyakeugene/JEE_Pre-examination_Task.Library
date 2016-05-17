@@ -43,8 +43,8 @@ public class SimpleCalculatorTest extends ExpressionTest {
     }
 
 
-    @Test(timeout = 1000)
+    @Test
     public void executeParsingTest() throws Exception {
-        simpleCalculator.execute("2 +9 * (log10 12+45)");
+        simpleCalculator.execute("2 + 9 * (12+45/5)");
     }
 }

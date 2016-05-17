@@ -7,10 +7,12 @@ import java.util.*;
  */
 public class SimpleCalculator implements Calculator {
     private static final String IMPOSSIBLE_TO_RECOGNIZE_OPERATION_SIGNATURE_PATTERN =
-            "Operation code has been detected as \"%s\", but it is impossible to recognize available "+
+            "Operation code has been detected as \"%s\", but it is impossible to recognize available " +
                     "operation signature in the expression\n   \"%s\"";
     private static final String IT_LOOKS_LIKE_THERE_IS_IMBALANCE_OF_LEFT_AND_RIGHT_PARENTHESISES_PATTERN =
             "It looks like there is imbalance of the left and right parenthesises in the expression\n   \"%s\"";
+    private static final String IMPOSSIBLE_TO_DETECT_OPERATION_BY_CODE_PATTERN =
+            "It is impossible to detect operation by code \"%s\" in the expression\n   \"%s\"";
 
     private static final String LEFT_PARENTHESIS = "(";
     private static final String RIGHT_PARENTHESIS = ")";
@@ -91,8 +93,8 @@ public class SimpleCalculator implements Calculator {
         // Set of available operation codes as delimiters
         Set<String> operationCodeSet = operationCodeSet();
         // Add left and right parenthesises as a sort of delimiters
-        operationCodeSet.add(String.valueOf(LEFT_PARENTHESIS));
-        operationCodeSet.add(String.valueOf(RIGHT_PARENTHESIS));
+        operationCodeSet.add(LEFT_PARENTHESIS);
+        operationCodeSet.add(RIGHT_PARENTHESIS);
         // Store "one-symbol-length"-operation codes as delimiters
         String delimiters =
                 String.join("", (CharSequence[]) operationCodeSet.stream().filter(d -> (d.length() == 1)).
@@ -111,6 +113,39 @@ public class SimpleCalculator implements Calculator {
         return result;
     }
 
+    private Operation getOperationByOperationCode(String operationCode, boolean throwException, String expression) {
+        Operation result = null;
+
+        Optional<Operation> operationOptional =
+                operationList.stream().filter(o -> o.getOperationCode().equals(operationCode)).findFirst();
+        if (operationOptional.isPresent()) {
+            result = operationOptional.get();
+        } else {
+            if (throwException) {
+                throw new IllegalArgumentException(String.format(IMPOSSIBLE_TO_DETECT_OPERATION_BY_CODE_PATTERN,
+                        operationCode, expression));
+
+            }
+        }
+
+        return result;
+    }
+
+    private Operation getOperationByOperationCode(String operationCode) {
+        return getOperationByOperationCode(operationCode, false, null);
+    }
+
+    private void calculateElementaryOperation(ArrayDeque<String> operandStack, ArrayDeque<String> operationStack) {
+        String operation = operationStack.pop();
+        String operand2 = operandStack.pop();
+        String operand1 = operandStack.pop();
+        // Construct expression
+        String elementaryExpression = String.format("%s %s %s", operand1, operation, operand2);
+
+        // Try to calculate expression and push the result onto operand stack
+        String elementaryExpressionResult = executeElementaryExpression(elementaryExpression);
+        operandStack.push(elementaryExpressionResult);
+    }
 
     @Override
     public String execute(String expression) {
@@ -118,44 +153,58 @@ public class SimpleCalculator implements Calculator {
         Set<String> operationCodeSet = operationCodeSet();
         // Operands stack
         ArrayDeque<String> operandStack = new ArrayDeque<>();
-        // Operator stack
-        ArrayDeque<String> operatorStack = new ArrayDeque<>();
+        // Operation stack
+        ArrayDeque<String> operationStack = new ArrayDeque<>();
 
         // Separate expression to "tokens"
         ArrayList<String> tokens = separateByTokens(expression);
         for (String token : tokens) {
             if (token.equals(LEFT_PARENTHESIS)) {
                 // Left parenthesis
-                operatorStack.push(token);
+                operationStack.push(token);
             } else if (token.equals(RIGHT_PARENTHESIS)) {
                 // Right parenthesis
-                while (!operatorStack.peekFirst().equals(LEFT_PARENTHESIS)) {
-                    String operator = operatorStack.pop();
-                    String operand2 = operandStack.pop();
-                    String operand1 = operandStack.pop();
-                    // Construct expression
-                    String elementaryExpression = String.format("%s %s %s", operand1, operator, operand2);
-                    // Try to calculate expression and push the result onto operand stack
-                    String elementaryExpressionResult = executeElementaryExpression(elementaryExpression);
-                    operandStack.push(elementaryExpressionResult);
+                while (!operationStack.peekFirst().equals(LEFT_PARENTHESIS)) {
+                    calculateElementaryOperation(operandStack, operationStack);
                 }
-                // Pop the relevant left parenthesis from operator stack and discard it
-                String expectedLeftParenthesis = operatorStack.pop();
+                // Pop the relevant left parenthesis from operation stack and discard it
+                String expectedLeftParenthesis = operationStack.pop();
                 // Check of the left and right parenthesises balance
                 if (!expectedLeftParenthesis.equals(LEFT_PARENTHESIS)) {
                     throw new IllegalArgumentException(String.format(
                             IT_LOOKS_LIKE_THERE_IS_IMBALANCE_OF_LEFT_AND_RIGHT_PARENTHESISES_PATTERN, expression));
                 }
             } else if (operationCodeSet.contains(token)) {
-                // Operator
-
+                // Operation
+                Operation operation = getOperationByOperationCode(token, true, expression);
+                int operationRank = operation.getRank();
+                while (!operationStack.isEmpty()) {
+                    Operation peekOperation = getOperationByOperationCode(operationStack.peekFirst());
+                    // Parenthesises can also be presented in the <operationStack> ...
+                    if (peekOperation != null) {
+                        if (peekOperation.getRank() >= operationRank) {
+                            calculateElementaryOperation(operandStack, operationStack);
+                        } else {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+                // Push this operation onto operation stack
+                operationStack.push(token);
             } else {
                 // Operand - just push it onto operand stack
                 operandStack.push(token);
             }
         }
 
+        // While the operation stack is not empty ...
+        while (!operationStack.isEmpty()) {
+            calculateElementaryOperation(operandStack, operationStack);
+        }
 
-        return executeElementaryExpression(expression);
+        // Pop from operand stack the result of the whole expression
+        return operandStack.pop();
     }
 }

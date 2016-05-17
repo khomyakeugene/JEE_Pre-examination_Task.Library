@@ -31,5 +31,5 @@ public interface Calculator {
 
     void setOperationList(List<Operation> operationList);
 
-    Set<String> operationCodeSet();
+    Set<String>  operationCodeSet();
 }
