@@ -19,6 +19,11 @@ public class SimpleCalculator implements Calculator {
 
     private static final String ADDITION_OPERATION_CODE = "+";
     private static final String SUBTRACT_OPERATION_CODE = "-";
+    private static final String MULTIPLICATION_OPERATION_CODE = "*";
+    private static final String DIVIDING_OPERATION_CODE = "/";
+
+    private static final int ADDITION_AND_SUBTRACT_RANK = 0;
+    private static final int MULTIPLICATION_AND_DIVIDING_RANK = 100;
 
     private Parser parser = new SimpleParser();
     private List<Operation> operationList = new ArrayList<>();
@@ -37,12 +42,26 @@ public class SimpleCalculator implements Calculator {
         // Addition operation for numbers
         NumberAdditionOperation numberAdditionOperation = new NumberAdditionOperation();
         numberAdditionOperation.setOperationCode(ADDITION_OPERATION_CODE);
+        numberAdditionOperation.setRank(ADDITION_AND_SUBTRACT_RANK);
         addOperation(numberAdditionOperation);
 
         // Subtract operation for numbers
         NumberSubtractOperation numberSubtractOperation = new NumberSubtractOperation();
         numberSubtractOperation.setOperationCode(SUBTRACT_OPERATION_CODE);
+        numberSubtractOperation.setRank(ADDITION_AND_SUBTRACT_RANK);
         addOperation(numberSubtractOperation);
+
+        // Multiplication operation for numbers
+        NumberMultiplicationOperation numberMultiplicationOperation = new NumberMultiplicationOperation();
+        numberMultiplicationOperation.setOperationCode(MULTIPLICATION_OPERATION_CODE);
+        numberMultiplicationOperation.setRank(MULTIPLICATION_AND_DIVIDING_RANK);
+        addOperation(numberMultiplicationOperation);
+
+        // Dividing operation for numbers
+        NumberDividingOperation numberDividingOperation = new NumberDividingOperation();
+        numberDividingOperation.setOperationCode(DIVIDING_OPERATION_CODE);
+        numberDividingOperation.setRank(MULTIPLICATION_AND_DIVIDING_RANK);
+        addOperation(numberDividingOperation);
     }
 
     private String executeElementaryExpression(String expression) {
