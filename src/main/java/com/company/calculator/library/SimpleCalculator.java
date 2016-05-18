@@ -8,13 +8,13 @@ import java.util.*;
 public class SimpleCalculator implements Calculator {
     private static final String IMPOSSIBLE_TO_RECOGNIZE_OPERATION_SIGNATURE_PATTERN =
             "Operation code has been detected as \"%s\", but it is impossible to recognize available " +
-                    "operation signature in the expression\n   \"%s\"";
+                    "operation signature in the expression \"%s\"";
     private static final String IT_LOOKS_LIKE_THERE_IS_IMBALANCE_OF_LEFT_AND_RIGHT_PARENTHESISES_PATTERN =
-            "It looks like there is imbalance of the left and right parenthesises in the expression\n   \"%s\"";
+            "It looks like there is imbalance of the left and right parenthesises in the expression \"%s\"";
     private static final String IMPOSSIBLE_TO_DETECT_OPERATION_BY_CODE_PATTERN =
-            "It is impossible to detect operation by code \"%s\" in the expression\n   \"%s\"";
+            "It is impossible to detect operation by code \"%s\" in the expression \"%s\"";
     private static final String IMPOSSIBLE_TO_CALCULATE_EXPRESSION_PATTERN =
-            "It is impossible to calculate expression\n   \"%s\"";
+            "It is impossible to calculate expression \"%s\"";
 
     private static final String LEFT_PARENTHESIS = "(";
     private static final String RIGHT_PARENTHESIS = ")";
