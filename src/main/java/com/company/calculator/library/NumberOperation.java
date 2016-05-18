@@ -13,7 +13,7 @@ public abstract class NumberOperation extends EmptyOperation implements Operatio
     protected abstract String calculate();
 
     @Override
-    public final String execute() {
+    public String execute() {
         return numberConversation(calculate());
     }
 
