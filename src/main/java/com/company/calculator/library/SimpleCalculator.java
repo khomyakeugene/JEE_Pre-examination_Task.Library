@@ -268,8 +268,15 @@ public class SimpleCalculator implements Calculator {
 
         // Pop from operand stack the result of the whole expression
         String result = operandStack.pop();
+
+        // Post-checks
         // <operandStack> could be not empty if some "tokens" has not been recognised as operands or operations
         if (!operandStack.isEmpty()) {
+            impossibleToCalculateExpressionError(expression);
+        }
+        // If <result> is equal to <expression> (and is not number) that is the indication that has probably been
+        // performed no calculation has been performed
+        if (result.equals(expression) && !Numbers.isNumber(expression)) {
             impossibleToCalculateExpressionError(expression);
         }
 

@@ -6,10 +6,6 @@ import java.util.List;
  * Created by Yevhen on 22.04.2016.
  */
 public class Numbers {
-    public static double parseNumber(String s) {
-        return Double.parseDouble(s);
-    }
-
     public static boolean isDoubleOperation(int operandCount, List<String> operandList) {
         // If <operandCount> < 0, th count of operands will not be checked
         boolean result = (operandCount < 0) || (operandList.size() == operandCount);
@@ -70,5 +66,9 @@ public class Numbers {
         }
 
         return number;
+    }
+
+    public static boolean isNumber(String s) {
+        return detectConversationClass(s) != null;
     }
 }
