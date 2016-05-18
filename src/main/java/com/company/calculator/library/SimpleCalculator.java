@@ -145,7 +145,6 @@ public class SimpleCalculator implements Calculator {
             if (throwException) {
                 throw new IllegalArgumentException(String.format(IMPOSSIBLE_TO_DETECT_OPERATION_BY_CODE_PATTERN,
                         operationCode, expression));
-
             }
         }
 
@@ -161,18 +160,50 @@ public class SimpleCalculator implements Calculator {
                 IT_LOOKS_LIKE_THERE_IS_IMBALANCE_OF_LEFT_AND_RIGHT_PARENTHESISES_PATTERN, expression));
     }
 
+    private void impossibleToCalculateExpressionError(String expression) {
+        throw new IllegalArgumentException(String.format(IMPOSSIBLE_TO_CALCULATE_EXPRESSION_PATTERN, expression));
+    }
+
     private void calculateElementaryOperation(ArrayDeque<String> operandStack, ArrayDeque<String> operationStack,
                                               String expression) {
-        String operation = operationStack.pop();
-        // <operation> could be parenthesis only if there is an imbalance of left and right parenthesises
-        if (operation.equals(LEFT_PARENTHESIS) || operation.equals(RIGHT_PARENTHESIS)) {
+        String elementaryExpression;
+
+        // Data integrity check
+        if (operationStack.isEmpty()) {
+            impossibleToCalculateExpressionError(expression);
+        }
+        String operationCode = operationStack.pop();
+        // <operationCode> could be parenthesis only if there is an imbalance of left and right parenthesises
+        if (operationCode.equals(LEFT_PARENTHESIS) || operationCode.equals(RIGHT_PARENTHESIS)) {
             leftRightParenthesisesImbalanceError(expression);
         }
+        Operation operation = getOperationByOperationCode(operationCode, true, expression);
+
         // Operands
+        // Data integrity check
+        if (operandStack.isEmpty()) {
+            impossibleToCalculateExpressionError(expression);
+        }
         String operand2 = operandStack.pop();
-        String operand1 = operandStack.pop();
-        // Construct expression
-        String elementaryExpression = String.format("%s %s %s", operand1, operation, operand2);
+        // Unary or binary operationCode?
+        OperatorType operatorType = operation.operatorType();
+        if (operatorType == OperatorType.PREFIX_UNARY || operatorType == OperatorType.POSTFIX_UNARY) {
+            // Unary operation
+            if (operatorType == OperatorType.PREFIX_UNARY ) {
+                elementaryExpression = String.format("%s %s", operationCode, operand2);
+            } else {
+                elementaryExpression = String.format("%s%s", operand2, operationCode);
+            }
+        } else {
+            // Binary operation
+            // Data integrity check
+            if (operandStack.isEmpty()) {
+                impossibleToCalculateExpressionError(expression);
+            }
+            String operand1 = operandStack.pop();
+            // Construct expression
+            elementaryExpression = String.format("%s %s %s", operand1, operationCode, operand2);
+        }
 
         // Try to calculate expression and push the result onto operand stack
         String elementaryExpressionResult = executeElementaryExpression(elementaryExpression);
@@ -240,7 +271,7 @@ public class SimpleCalculator implements Calculator {
         String result = operandStack.pop();
         // <operandStack> could be not empty if some "tokens" has not been recognised as operands or operations
         if (!operandStack.isEmpty()) {
-            throw new IllegalArgumentException(String.format(IMPOSSIBLE_TO_CALCULATE_EXPRESSION_PATTERN, expression));
+            impossibleToCalculateExpressionError(expression);
         }
 
         return result;
