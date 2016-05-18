@@ -41,10 +41,4 @@ public class SimpleCalculatorTest extends ExpressionTest {
     public void executeInvalidExpressionTest() throws Exception {
         executeTest(invalidBinaryOperationExpression);
     }
-
-
-    @Test
-    public void executeParsingTest() throws Exception {
-        simpleCalculator.execute("2 - 9 * ((12+45/5))");
-    }
 }
