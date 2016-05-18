@@ -206,8 +206,7 @@ public class SimpleCalculator implements Calculator {
         }
 
         // Try to calculate expression and push the result onto operand stack
-        String elementaryExpressionResult = executeElementaryExpression(elementaryExpression);
-        operandStack.push(elementaryExpressionResult);
+        operandStack.push(executeElementaryExpression(elementaryExpression));
     }
 
     @Override
